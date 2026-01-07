@@ -1,5 +1,5 @@
 {
-  "name": "simple-monolith",
+  "name": "test-ssr-console-app",
   "private": true,
   "workspaces": [
     "packages/*"

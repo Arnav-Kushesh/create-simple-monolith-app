@@ -46,31 +46,15 @@ const isBot = (userAgent) => {
         'x-bufferbot',
     ];
     const lowerUA = userAgent.toLowerCase();
-    // Check if it contains specific bot strings OR just "bot"
-    return bots.some(bot => lowerUA.includes(bot)) || lowerUA.includes('bot');
+    return bots.some(bot => lowerUA.includes(bot));
 };
 
 // Function to scrape the local frontend using Puppeteer
-const ssr = async (url, userAgent) => {
-    console.log(`Rendering via SSR for: ${url} (UA: ${userAgent})`);
+const ssr = async (url) => {
+    console.log(`Rendering via SSR for: ${url}`);
     const browser = await puppeteer.launch({ headless: 'new' });
     try {
         const page = await browser.newPage();
-
-        // Optimize for speed by disabling unnecessary resources
-        await page.setRequestInterception(true);
-        page.on('request', (req) => {
-            const resourceType = req.resourceType();
-            if (['image', 'stylesheet', 'font'].includes(resourceType)) {
-                req.abort();
-            } else {
-                req.continue();
-            }
-        });
-
-        if (userAgent) {
-            await page.setUserAgent(userAgent);
-        }
 
         // Check if absolute URL (started with http)
         const targetUrl = url.startsWith('http')
@@ -97,12 +81,10 @@ const frontendDist = path.resolve(__dirname, '../frontend/dist');
 // API Endpoint for SSR Console
 app.get('/render', async (req, res) => {
     const targetPath = req.query.url;
-    const userAgent = req.query.ua || req.get('User-Agent');
-
     if (!targetPath) {
         return res.status(400).send('Missing url query parameter');
     }
-    const html = await ssr(targetPath, userAgent);
+    const html = await ssr(targetPath);
     res.send(html);
 });
 
@@ -116,7 +98,7 @@ app.use(async (req, res, next) => {
 
     if (isBot(userAgent)) {
         console.log(`Bot detected (${userAgent}). Serving SSR...`);
-        const html = await ssr(req.url, userAgent); // Pass the path and UA
+        const html = await ssr(req.url); // Pass the path
         res.send(html);
     } else {
         console.log(`User detected. Serving static app.`);
