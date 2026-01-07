@@ -1,0 +1,21 @@
+{
+  "name": "simple-monolith",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "apis": "turbo run dev --filter apis",
+    "frontend": "turbo run dev --filter frontend",
+    "ssr": "turbo run dev --filter frontend --filter ssr",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+  },
+  "devDependencies": {
+    "turbo": "latest",
+    "prettier": "latest"
+  },
+  "packageManager": "npm@10.0.0"
+}
