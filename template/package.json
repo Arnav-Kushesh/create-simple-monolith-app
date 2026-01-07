@@ -10,6 +10,7 @@
     "apis": "turbo run dev --filter apis",
     "frontend": "turbo run dev --filter frontend",
     "ssr": "turbo run dev --filter frontend --filter ssr",
+    "only-ssr": "turbo run dev --filter ssr",
     "console": "turbo run dev --filter ssr-console",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
