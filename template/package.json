@@ -5,12 +5,11 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "turbo run build",
+    "build": "turbo run build && turbo run prerender",
     "dev": "turbo run dev",
-    "apis": "turbo run dev --filter apis",
+    "backend": "turbo run dev --filter backend",
     "frontend": "turbo run dev --filter frontend",
-    "ssr": "turbo run dev --filter frontend --filter ssr",
-    "only-ssr": "turbo run dev --filter ssr",
+    "optimized-frontend": "turbo run start --filter optimized-frontend",
     "console": "turbo run dev --filter ssr-console",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""

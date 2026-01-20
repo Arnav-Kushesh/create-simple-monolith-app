@@ -11,9 +11,14 @@
             ]
         },
         "lint": {},
+        "start": {},
         "dev": {
             "cache": false,
             "persistent": true
+        },
+        "prerender": {
+            "cache": false,
+            "persistent": false
         }
     }
 }

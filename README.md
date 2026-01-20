@@ -1,82 +1,78 @@
-# Simple Monolith 🐝
+# Create Simple Monolith App
 
-**Simple Monolith** is a lightweight alternative to Next.js that performs server-side rendering (SSR) *only for bots* and serves a static site to real users.
+Goal: Provide a simple mechanism for doing SSR that requires minimal code frontend code manipulation
 
-This architecture ensures:
-1.  **Blazing Fast Performance**: Real users get a static SPA served directly from CDNs/disk.
-2.  **Perfect SEO**: Bots (Google, Bing, Twitter, etc.) get fully rendered HTML via Puppeteer.
-3.  **Clean Separation**: Dedicated packages for API, Frontend, and SSR.
+## How it works?
 
-
-
-## Getting Started
-
-
-### Installation
-
-1.  npx create-simple-monolith-app <project-name>
-2.  cd <project-name>
-3.  npm install
-
-### Running Locally
-
-To start all services (API, Frontend Dev Server, SSR Server):
-
-```bash
-npm run dev
-```
-
-This will start:
-- **API**: http://localhost:3001
-- **Frontend (Vite Dev)**: http://localhost:3000
-- **SSR Server (Entry Point)**: http://localhost:8080
-
-### Running Services Individually
-
-You can also run specific parts of the stack:
-
-- **`npm run apis`**: Runs only the API service.
-- **`npm run frontend`**: Runs only the frontend (standard React dev server).
-- **`npm run ssr`**: Runs the frontend and the SSR server together.
-    > **Note**: You must run `npm run build` first so that the SSR server has static assets to serve to users.
-- **`npm run console`**: Runs the SSR Console (http://localhost:3002).
-
-**👉 You should access the app via http://localhost:8080**
-
-### Testing SSR & Bot Detection
- 
-The `ssr` package includes a special Console app for debugging.
- 
-1.  **Visit Console**: Go to http://localhost:3002.
-2.  **Test a Path**: Enter `/` or any other path to see the rendered HTML.
-3.  **Simulate Bot via curl**:
-    ```bash
-    curl -A "Googlebot" http://localhost:8080/
+- Basically static site generation is done through puppeteer
+- The advantage of this method is that the frontend code requires zero change to support static generation
+- All you need to do is mention all the static routes
+- At build time,the package will scrape all of those routes and cache it on the server
+- When a user or bot tries to access that route, the rendered result in the cached is served, improving SEO & performance
+- Bot can easily crawl the page without needing to execute JS
+- Browsers can instantly show UI without needing to do CSR
+- For creating the rendered cache of the static routes puppeteer is used, puppeteer only runs at build time. So, there is no impact on performance
+- We call this method: scrapping based static generation & ssr
+- If UI on the static page relies on api requests then that UI will also be saved during the build time
+  - To ensure that this data is not loaded again by JS use the following setup
+  - After making the api requests you only need to do `window.EXPORT_STATIC_PAGE_DATA= data `
+  - Then this data will be saved at build time
+  - After that you can use this saved data using the following logic
+  - ```
+        let preLoadedData = window.getPreLoadedData
+          ? window.getPreLoadedData()
+          : null;
     ```
+  - The `getPreLoadedData` function is inject by the server, you don't need to import any library to use it
+  - getPreLoadedData checks the page path and then provides the data you assigned to `window.EXPORT_STATIC_PAGE_DATA`
 
-## Deployment
+## How SSR works on dynamic routes are handled?
 
-When deploying `simple-monolith`, you typically need to host two separate services:
+- Let's say you have post pages. In that case static generation can't be done.
+- We will have to do server side rendering
+- You will have to provide list of dynamic routes with a loader function and template
+- For providing the template you need to create a route in the application that serve the template.
+- For example /post-page-template, you can use handlebar syntax inside your react / vue component
+- Make sure it is the same component structure that serves post pages
+- Once the post-page-template has been cached, users & bots will be prevented from visiting that route
+- data extracted from the loader function will be inserted in /post-page-template to serve users when they visit /post/123 page
+- because the component itself it being used for templating, hydration won't be an issue
+- hydration might break if non-deterministic logic is used like Math.random, in that case you can restrict SSR to BOT_ONLY by passing the config `dynamicRendering:BOT_ONLY`
+- The data loaded from the loader function can be accessed by using the following logic
 
-1.  **APIs**: Run the `npm run apis` script (or deploy the `packages/apis` folder).
-2.  **Frontend + SSR**: Run the `npm run ssr` script. This handles both the bot detection/SSR server and serves the static frontend assets to users.
-    > **Important**: Ensure you run `npm run build` before starting the SSR service in production.
+```
+  let preLoadedData = window.getPreLoadedData
+            ? window.getPreLoadedData()
+            : null;
 
-**Note**: The `frontend` script is primarily for development or if you only want to serve the static site without SSR/bot detection (e.g., on Netlify/Vercel static hosting), but you would lose the SEO benefits of this framework.
-
-## Building for Production
-
-```bash
-npm run build
 ```
 
-This triggers `turbo run build`, which builds the React app into `packages/frontend/dist`.
+## Use Cases
 
-## Onboarding
+### Add SSR to a capacitor project
 
-To scaffold a new project based on this template, you can run:
+- Capacitor requires a clean build folder to function but in frameworks like Next.js & Tanstack backend and frontend codebase is very closely interconnected
+- Capacitor is only supposed to run frontend code.
+- So it takes significant workarounds to make Next.js / Tanstack to work with Capacitor without compromising on the features of capacitor or Next.js / Tanstack
+- With scrapping based static generation & ssr, the capacitor project requires little to no change
 
-```bash
-npx create-simple-monolith-app <project-name>
-```
-*(Note: Since this is a specialized repo, simply cloning this structure works effectively as a starting point).*
+### Huge codebase
+
+- If you have a big project, rewriting it in Remix / Next.js / Tanstack might not be economical
+- With out implementation frontend code requires little to no change
+
+## Benefits
+
+- Minimal learning curve
+- Minimal need to change frontend code
+- Works with any frontend technology
+
+## How to run dev server
+
+`npm run dev` Starts the backend, frontend & SSR server using TurboRepo
+
+## How to do deployment
+
+`npm run backend` - For backend deployment
+`npm run ssr` - For frontend deployment
+`npm run build` - For generating build folder

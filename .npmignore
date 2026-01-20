@@ -6,6 +6,8 @@ Thumbs.db
 .git
 .gitignore
 
+.mdb
+
 # Ignore node_modules
 node_modules/
 template/**/node_modules/
