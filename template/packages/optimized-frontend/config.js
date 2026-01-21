@@ -17,34 +17,51 @@ const staticRoutes = [
   // Add other static routes here, e.g., '/about', '/contact'
 ];
 
-const dynamicRoutes = [
-  {
-    path: "/post/:id",
-    templateRoute: "/post-page-template",
-    loader: async ({ params }) => {
-      // Fetch data based on params.id
-      // const res = await fetch(`https://api.example.com/posts/${params.id}`);
-      // return res.json();
-
-      let res = await fetch(
-        "https://jsonplaceholder.typicode.com/posts/" + params.id,
-      );
-
-      let data = await res.json();
-
-      return data;
-    },
-  },
-];
-
 // Start the SSR service
 let config = {
   buildFolder: buildDir,
   staticRoutes,
-  dynamicRoutes,
+  dynamicRoutes: [
+    {
+      path: "/post/:id",
+      templateRoute: "/post-page-template",
+      loader: async ({ params }) => {
+        // Fetch data based on params.id
+        // const res = await fetch(`https://api.example.com/posts/${params.id}`);
+        // return res.json();
+
+        let res = await fetch(
+          "https://jsonplaceholder.typicode.com/posts/" + params.id,
+        );
+
+        let data = await res.json();
+
+        return data;
+      },
+      sitemapGenerator: async () => {
+        return {
+          uniqueName: "posts",
+          total: 100000,
+          loader: async ({ limit, itemsToSkip }) => {
+            // In a real app, this would fetch from database
+            // mocking functionality for now
+            let items = [];
+            for (let i = 0; i < limit; i++) {
+              items.push({
+                url: `/post/${itemsToSkip + i}`,
+                lastUpdatedAt: new Date().toISOString(),
+              });
+            }
+            return items;
+          },
+        };
+      },
+    },
+  ],
   port: PORT,
   prerenderingPort: PRERENDER_PORT,
   dynamicRendering: "ALL_REQUESTS", // or 'BOT_ONLY'
+  domain: "https://example.com",
 };
 
 export default config;

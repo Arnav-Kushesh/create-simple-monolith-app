@@ -4,6 +4,7 @@ import cors from "cors";
 import { match } from "path-to-regexp";
 import path from "path";
 import Handlebars from "handlebars";
+import { handleSitemapRequest } from "./sitemapGenerator.js";
 
 /**
  * simpleSSR function
@@ -14,6 +15,7 @@ import Handlebars from "handlebars";
  * @param {number} options.port - Main server port
  * @param {number} [options.prerenderingPort=4050] - Port for prerendering server
  * @param {'BOT_ONLY' | 'ALL_REQUESTS'} [options.dynamicRendering='ALL_REQUESTS'] - Prerendering strategy for dynamic routes
+ * @param {string} options.domain - Domain for the sitemap
  */
 
 let removeTrailingSlashFunc = `
@@ -27,14 +29,17 @@ function removeTrailingSlash(str) {
 
 `;
 
-export default async function simpleSiteOptimizer({
-  buildFolder,
-  staticRoutes,
-  dynamicRoutes,
-  port,
-  prerenderingPort = 4050,
-  dynamicRendering = "ALL_REQUESTS",
-}) {
+export default async function simpleSiteOptimizer(config) {
+  const {
+    buildFolder,
+    staticRoutes,
+    dynamicRoutes,
+    port,
+    prerenderingPort = 4050,
+    dynamicRendering = "ALL_REQUESTS",
+    domain,
+  } = config;
+
   const isPrerenderMode = process.env.PRERENDER_MODE == "ACTIVE";
 
   // 1. Validation
@@ -61,6 +66,21 @@ export default async function simpleSiteOptimizer({
   // Middleware to handle requests
   mainApp.use(async (req, res, next) => {
     const reqPathRaw = req.path;
+
+    // Check for sitemap request
+    if (reqPathRaw.startsWith("/sitemap")) {
+      const handled = await handleSitemapRequest(req, res, config);
+      if (handled !== undefined) return; // If handleSitemapRequest sent a response, it might return a promise resolving to nothing or response object. 
+      // My implementation returns res.send(...) which returns the response object usually. 
+      // If it returns explicit false/null, we continue. 
+      // But looking at my code, I return the result of res.send().
+      // Wait, if it falls through (e.g. 404 inside logic or not matching regex), it might return 404.
+      // Actually my implementation sends 404 explicitly if not found but matched prefix pattern logic.
+      // BUT, if it doesn't match any if block, it returns undefined.
+      // I should check if response was sent.
+      if (res.headersSent) return;
+    }
+
     let [reqPath, queryString] = reqPathRaw.split("?");
     reqPath = removeTrailingSlash(reqPath);
     // parse query params
