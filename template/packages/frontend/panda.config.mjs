@@ -16,7 +16,8 @@ export default defineConfig({
   globalCss: {
     ":root": {
       "--font-doto": "'Doto', sans-serif",
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
+      fontFamily:
+        '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
       lineHeight: "1.5",
       fontWeight: "400",
       colorScheme: "light",
@@ -49,7 +50,6 @@ export default defineConfig({
       fontWeight: "700",
       marginBottom: "1.5rem",
       color: "#000000",
-
     },
     h2: {
       fontSize: "2rem",
@@ -70,14 +70,6 @@ export default defineConfig({
       lineHeight: "1.47059",
       letterSpacing: "-0.022em",
     },
-    "p.subtitle": {
-      fontSize: "1.2rem",
-      lineHeight: "1.3",
-      color: "#86868b",
-      maxWidth: "80%",
-      margin: "0 0 4rem 0",
-      fontWeight: "400",
-    },
   },
 
   theme: {
@@ -85,8 +77,8 @@ export default defineConfig({
       tokens: {
         fonts: {
           doto: { value: "'Doto', sans-serif" },
-        }
-      }
+        },
+      },
     },
   },
 });
