@@ -10,11 +10,6 @@ export default defineConfig({
   // Files to exclude
   exclude: [],
 
-  // Useful for theme customization
-  theme: {
-    extend: {},
-  },
-
   // The output directory for your css system
   outdir: "styled-system",
 
@@ -54,6 +49,7 @@ export default defineConfig({
       fontWeight: "700",
       marginBottom: "1.5rem",
       color: "#000000",
+
     },
     h2: {
       fontSize: "2rem",
