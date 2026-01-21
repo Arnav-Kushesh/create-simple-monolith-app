@@ -1,7 +1,7 @@
 {
   "name": "create-simple-fullstack-project",
-  "version": "1.0.7",
-  "description": "One of the most minimal way to create fullstack project that supports SSR, SSG, Sitemap Generation out of the box",
+  "version": "1.0.8",
+  "description": "A minimal way to create fullstack project that supports SSR, SSG, Sitemap Generation out of the box",
   "bin": {
     "create-simple-fullstack-project": "./index.js"
   },
