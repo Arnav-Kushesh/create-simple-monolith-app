@@ -10,15 +10,21 @@
 
 </div>
 
-## What is "Start Simple"
+<br/>
+
+### What is "Start Simple"
 
 A minimal full-stack setup with out-of-the-box support for SSR, SSG, and sitemap generation.
 
-## Why this project was created
+### Why this project was created
 
 We wanted to create a way to add SSR & SSG features with minimal code changes on the frontend
 
-## How Static Site Generation Works?
+### Installation
+
+`npx start-simple`
+
+### How Static Site Generation Works?
 
 - Basically static site generation is done through Puppeteer at build time
 - The advantage of this method is that the frontend code requires little to no change to support static generation
@@ -43,7 +49,7 @@ We wanted to create a way to add SSR & SSG features with minimal code changes on
   - `getPreLoadedData` checks the page path and then provides the data you assigned to `window.EXPORT_STATIC_PAGE_DATA`
   - hydration might break if non-deterministic logic is being used like Math.random, in that case you can restrict SSG to `BOT_ONLY` by passing the config `staticRendering:BOT_ONLY` in `/optimized-frontend/config.js`
 
-## How Server Side Rendering Works?
+### How Server Side Rendering Works?
 
 - Let's say you have post pages. In that case static generation isn't practical because you might have thousands or millions of post pages
 - We will have to do server side rendering for this
@@ -61,7 +67,7 @@ We wanted to create a way to add SSR & SSG features with minimal code changes on
 let preLoadedData = window.getPreLoadedData && window.getPreLoadedData();
 ```
 
-## Use Cases
+### Use Cases
 
 ### Add SSR to a capacitor project
 
