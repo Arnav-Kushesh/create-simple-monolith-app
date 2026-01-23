@@ -186,6 +186,12 @@ if (container.innerHTML.trim()) {
 }
 ```
 
+## Precautions
+
+- If anchor tag with target="\_black" is used then ensure that it has the following attribute rel="noopener noreferrer"
+- If rel="noopener noreferrer" is not there then Puppeteer might add it for security reasons which can cause hydration issues
+- This is a theoretical issue, in practice this issue has not occurred in our testing
+
 # How to use sitemap generator
 
 To enable sitemap generation, you need to update your `config.js` file inside of `optimized-frontend` folder
