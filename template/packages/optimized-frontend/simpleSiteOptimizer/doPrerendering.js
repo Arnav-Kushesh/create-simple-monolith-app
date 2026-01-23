@@ -6,6 +6,7 @@ import { match } from "path-to-regexp";
 import fs from "fs";
 import path from "path";
 import Handlebars from "handlebars";
+import preventTextNodeMerge from "./utils/preventTextNodeMerge.js";
 
 /**
  * simpleSSR function
@@ -74,7 +75,9 @@ export default async function doPrerendering({
     const visitAndStore = async (routePath, storageKey) => {
       const url = `http://localhost:${prerenderingPort}${routePath}`;
       try {
-        await page.goto(url, { waitUntil: "networkidle0", timeout: 30000 });
+        await page.goto(url, { waitUntil: "networkidle0", timeout: 50000 });
+
+        await preventTextNodeMerge(page);
 
         // Extract STATIC_PAGE_DATA
         const staticData = await page.evaluate(

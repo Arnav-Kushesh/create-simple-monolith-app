@@ -1,4 +1,17 @@
-## 🌻 Start Simple
+<div align="center">
+  <a href="https://nextjs.org">
+    <picture>
+      <img alt="Next.js logo" src="![Logo](https://raw.githubusercontent.com/arnav-kushesh/start-simple/master/assets/sunflower.png)
+" height="128">
+    </picture>
+  </a>
+  <h3>StartSimple.js</h3>
+
+![Static Badge](https://img.shields.io/badge/DISCORD-JOIN-blue?style=for-the-badge&logo=discord&labelColor=black&color=%235965f2&link=https%3A%2F%2Fdiscord.com%2Finvite%2F3XzqKYdchP) ![NPM License](https://img.shields.io/npm/l/start-simple?style=for-the-badge&labelColor=black&color=green) ![NPM Version](https://img.shields.io/npm/v/start-simple?style=for-the-badge&labelColor=black&color=green)
+
+</div>
+
+## What is "Start Simple"
 
 A minimal way to create fullstack project that supports SSR, SSG & Sitemap Generation out of the box
 
@@ -68,13 +81,78 @@ let preLoadedData = window.getPreLoadedData && window.getPreLoadedData();
 - Minimal need to change frontend code - Frontend is a standard react app
 - Works with any frontend technology - You can replace the frontend folder with any other technology and it will still work
 
+# Getting started
+
 ## Installation
 
 `npx start-simple`
 
-## How to run dev server
+## Configure
 
-`npm run dev` Starts the backend, frontend server using TurboRepo
+Inside of `/optimized-frontend/config.js` you can mention the static and dynamic routes
+
+```js
+// Define your routes here
+const staticRoutes = [
+  "/",
+  // Add other static routes here, e.g., '/about', '/contact'
+];
+
+// Start the SSR service
+let config = {
+  buildFolder: buildDir,
+  staticRoutes,
+  dynamicRoutes: [
+    {
+      path: "/post/:id",
+      templateRoute: "/post-page-template",
+      loader: async ({ params }) => {
+        // Fetch data based on params.id
+        // const res = await fetch(`https://api.example.com/posts/${params.id}`);
+        // return res.json();
+
+        let res = await fetch(
+          "https://jsonplaceholder.typicode.com/posts/" + params.id,
+        );
+
+        let data = await res.json();
+
+        return data;
+      },
+      sitemapGenerator: async () => {
+        return {
+          uniqueName: "posts",
+          total: 100000,
+          loader: async ({ limit, itemsToSkip }) => {
+            // In a real app, this would fetch from database
+            // mocking functionality for now
+            let items = [];
+            for (let i = 0; i < limit; i++) {
+              items.push({
+                url: `/post/${itemsToSkip + i}`,
+                lastUpdatedAt: new Date().toISOString(),
+              });
+            }
+            return items;
+          },
+        };
+      },
+    },
+  ],
+  port: PORT,
+  prerenderingPort: PRERENDER_PORT,
+  dynamicRendering: "ALL_REQUESTS", // or 'BOT_ONLY'
+  domain: "https://example.com",
+};
+
+export default config;
+```
+
+## Development
+
+`npm run dev` Starts the backend, frontend server using TurboRepo - SSR & SSG is disabled in this case
+`npm run build` Builds the project and does the pre-rendering
+`npm run optimized-frontend` Frontend is started with SSR & SSG
 
 ## How to do deployment
 
@@ -82,9 +160,33 @@ let preLoadedData = window.getPreLoadedData && window.getPreLoadedData();
 `npm run build` - For generating dist folder & doing pre-rendering
 `npm run optimized-frontend` - For frontend deployment that supports SSG & SSR
 
-## How to do deployment
-
 - Before running `npm run optimized-frontend` you first need to run the build command so that pre-rendering can happen
+
+## If you end up replacing the frontend folder do remember to enable hydration using the following code if you are using react
+
+```js
+import React from "react";
+import { createRoot, hydrateRoot } from "react-dom/client";
+import App from "./App.jsx";
+import "./index.css";
+import { BrowserRouter } from "react-router-dom";
+
+let container = document.getElementById("root");
+
+let Component = (
+  <React.StrictMode>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  </React.StrictMode>
+);
+
+if (container.innerHTML.trim()) {
+  hydrateRoot(container, Component);
+} else {
+  createRoot(container).render(Component);
+}
+```
 
 # How to use sitemap generator
 

@@ -135,7 +135,7 @@ function PostList() {
               <h3>{post.title.substring(0, 30) + "..."}</h3>
               <p>{post.body.substring(0, 100) + "..."}</p>
               <div className={buttonGroupStyle}>
-                {/* <a
+                <a
                   href={`/post/${post.id}`}
                   target="_blank"
                   rel="noreferrer"
@@ -145,7 +145,7 @@ function PostList() {
                 </a>
                 <Link to={`/post/${post.id}`} className={primaryBtnStyle}>
                   Open
-                </Link> */}
+                </Link>
               </div>
             </div>
           ))}
