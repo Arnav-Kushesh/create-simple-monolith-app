@@ -1,8 +1,7 @@
 <div align="center">
   <a href="https://nextjs.org">
     <picture>
-      <img alt="Next.js logo" src="![Logo](https://raw.githubusercontent.com/arnav-kushesh/start-simple/master/assets/sunflower.png)
-" height="128">
+      <img alt="Next.js logo" src="https://raw.githubusercontent.com/arnav-kushesh/start-simple/master/assets/sunflower.png" height="128">
     </picture>
   </a>
   <h3>StartSimple.js</h3>
